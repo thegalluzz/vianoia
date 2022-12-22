@@ -1,11 +1,20 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
 import styles from '../styles/Home.module.css'
+import { useState } from 'react'
 
-const inter = Inter({ subsets: ['latin'] })
+export default function Home() {
+  const [data, setData] = useState({
+    activity: "",
+    type: "",
+    participants: ""
+  });
 
-export default function Home({data}) {
+  async function boredFetch() {
+    const res = await fetch(`https://www.boredapi.com/api/activity/`)
+    const data = await res.json()
+    setData(data);
+  }
+
   return (
     <>
       <Head>
@@ -19,19 +28,10 @@ export default function Home({data}) {
         <h1>Activity: {data.activity}</h1>
         <p>Type: {data.type}</p>
         <p>Participants: {data.participants}</p>
-        
+
+        <button onClick={boredFetch}>Get Activity</button>
 
       </main>
     </>
   )
-}
-
-// This gets called on every request
-export async function getServerSideProps() {
-  // Fetch data from external API
-  const res = await fetch(`https://www.boredapi.com/api/activity/`)
-  const data = await res.json()
-
-  // Pass data to the page via props
-  return { props: { data } }
 }
