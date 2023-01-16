@@ -1,18 +1,27 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
-import { useState } from 'react'
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import { useState } from "react";
+import Navbar from "../components/navbar";
 
 export default function Home() {
   const [data, setData] = useState({
-    activity: "",
-    type: "",
-    participants: ""
+    activity: "Learning to Draw",
+    type: "education",
+    participants: "1",
   });
+  const [loading, setLoading] = useState(false);
+
+  const delay = ms => new Promise(
+    resolve => setTimeout(resolve, ms)
+  );
 
   async function boredFetch() {
-    const res = await fetch(`https://www.boredapi.com/api/activity/`)
-    const data = await res.json()
+    setLoading(true);
+    const res = await fetch(`https://www.boredapi.com/api/activity/`);
+    const data = await res.json();
     setData(data);
+    await delay(1000);
+    setLoading(false);
   }
 
   return (
@@ -23,15 +32,26 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Navbar />
       <main className={styles.main}>
+        <div className={styles.activityCenter}>
+          {(loading)
+            ?
+            <div className={styles.loader}></div>
+            :
+            <div className={styles.activityBox}>
+              <h1>Activity: {data.activity}</h1>
+              <p>Type: {data.type}</p>
+              <p>Participants: {data.participants}</p>
+            </div>
+          }
 
-        <h1>Activity: {data.activity}</h1>
-        <p>Type: {data.type}</p>
-        <p>Participants: {data.participants}</p>
-
-        <button onClick={boredFetch}>Get Activity</button>
+        </div>
+        <div className={styles.buttonDiv}>
+          <button className={styles.button} onClick={boredFetch}>Get Activity</button>
+        </div>
 
       </main>
     </>
-  )
+  );
 }
